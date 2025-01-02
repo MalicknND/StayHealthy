@@ -20,7 +20,7 @@
 
 /* Styles for form controls */
 .form-control {
-  width: 40%; /* Width of form controls */
+  width: 100%; /* Width of form controls */
   padding: 8px; /* Padding inside form controls */
   font-size: 16px; /* Font size of form controls */
   border: 1px solid #ccc; /* Border around form controls */
@@ -40,6 +40,7 @@
   border: none; /* No border for buttons */
   border-radius: 4px; /* Border radius for rounded corners on buttons */
   cursor: pointer; /* Cursor style on hover for buttons */
+  width: 100%;
 }
 
 /* Styles for primary buttons */
@@ -52,4 +53,10 @@
 .btn-danger {
   background-color: #dc3545; /* Background color for danger buttons */
   color: #fff; /* Text color for danger buttons */
+}
+/* Styles for error messages */
+.error {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
 }

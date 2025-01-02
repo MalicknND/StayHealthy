@@ -1,12 +1,13 @@
 import React from 'react'
 import "./Navbar.css";
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   return (
     <div>
          <nav>
       <div className="nav__logo">
-        <a href="#">
+        <a href="/">
           StayHealthy
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -33,26 +34,26 @@ const Navbar = () => {
         </a>
         <span>.</span>
       </div>
-      <div className="nav__icon" onClick="{handleClick}">
+      <div className="nav__icon" >
         <i className="fa fa-times fa fa-bars"></i>
       </div>
 
       <ul className="nav__links active">
         <li className="link">
-          <a href="#">Home</a>
+          <a href="/">Home</a>
         </li>
         <li className="link">
-          <a href="#">Appointments</a>
+          <a href="/">Appointments</a>
         </li>
         <li className="link">
-          <a href="#">
+          <Link to="/signup">
             <button className="btn1">Sign Up</button>
-          </a>
+          </Link>
         </li>
         <li className="link">
-          <a href="#">
+          <Link to="/login">
             <button className="btn1">Login</button>
-          </a>
+          </Link>
         </li>
       </ul>
     </nav>
