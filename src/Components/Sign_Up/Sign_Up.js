@@ -10,11 +10,63 @@ const Sign_Up = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showerr, setShowerr] = useState(""); // State to show error messages
+  const [errors, setErrors] = useState({}); // Errors object to store validation errors
   const navigate = useNavigate(); // Navigation hook from react-router
+
+  // Validate phone number (must be 10 digits)
+  const validatePhone = (phone) => {
+    return phone.length === 10 && /^[0-9]{10}$/.test(phone); // Exactly 10 digits
+  };
+
+  // Validate email format
+  const validateEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return emailRegex.test(email); // Standard email regex
+  };
+
+  // Validate name (at least 4 characters)
+  const validateName = (name) => {
+    return name.length >= 4; // Minimum 4 characters for name
+  };
+
+  // Validate password (at least 8 characters)
+  const validatePassword = (password) => {
+    return password.length >= 8; // Minimum 8 characters for password
+  };
+
   // Function to handle form submission
   const register = async (e) => {
     e.preventDefault(); // Prevent default form submission
-    // API Call to register user
+
+    // Clear previous errors
+    setErrors({});
+
+    let validationErrors = {};
+
+    // Validate form fields
+    if (!validateName(name)) {
+      validationErrors.name = "Username should be at least 4 characters.";
+    }
+
+    if (!validateEmail(email)) {
+      validationErrors.email = "Please enter a valid email.";
+    }
+
+    if (!validatePhone(phone)) {
+      validationErrors.phone = "Phone number should be exactly 10 digits.";
+    }
+
+    if (!validatePassword(password)) {
+      validationErrors.password = "Password should be at least 8 characters.";
+    }
+
+    // If there are validation errors, update state and stop the submission
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    // API Call to register user if validation passes
     const response = await fetch(`${API_URL}/api/auth/register`, {
       method: "POST",
       headers: {
@@ -28,6 +80,7 @@ const Sign_Up = () => {
       }),
     });
     const json = await response.json(); // Parse the response JSON
+
     if (json.authtoken) {
       // Store user data in session storage
       sessionStorage.setItem("auth-token", json.authtoken);
@@ -39,9 +92,8 @@ const Sign_Up = () => {
       window.location.reload(); // Refresh the page
     } else {
       if (json.errors) {
-        for (const error of json.errors) {
-          setShowerr(error.msg); // Show error messages
-        }
+        // Show errors from the API response
+        setShowerr(json.errors.map((error) => error.msg).join(", "));
       } else {
         setShowerr(json.error);
       }
@@ -76,13 +128,13 @@ const Sign_Up = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
-                 {showerr && (
+              {errors.name && (
                 <div className="err" style={{ color: "red" }}>
-                  {showerr}
+                  {errors.name}
                 </div>
               )}
             </div>
-      
+
             <div className="form-group">
               <label htmlFor="email">Email</label>
               <input
@@ -95,12 +147,13 @@ const Sign_Up = () => {
                 placeholder="Enter your email"
                 aria-describedby="helpId"
               />
-              {showerr && (
+              {errors.email && (
                 <div className="err" style={{ color: "red" }}>
-                  {showerr}
+                  {errors.email}
                 </div>
               )}
             </div>
+
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <input
@@ -112,12 +165,13 @@ const Sign_Up = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-                {showerr && (
+              {errors.password && (
                 <div className="err" style={{ color: "red" }}>
-                  {showerr}
+                  {errors.password}
                 </div>
               )}
             </div>
+
             <div className="form-group">
               <label htmlFor="phone">Phone</label>
               <input
@@ -129,12 +183,19 @@ const Sign_Up = () => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
-              {showerr && (
+              {errors.phone && (
                 <div className="err" style={{ color: "red" }}>
-                  {showerr}
+                  {errors.phone}
                 </div>
               )}
             </div>
+
+            {showerr && (
+              <div className="err" style={{ color: "red" }}>
+                {showerr}
+              </div>
+            )}
+
             <div className="btn-group">
               <button
                 type="submit"

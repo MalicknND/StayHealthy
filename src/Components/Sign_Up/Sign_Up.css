@@ -84,3 +84,8 @@
     background-color: #dc3545;
     color: #fff;
   }
+
+  .err {
+  color: red;
+  font-size: 12px;
+}
