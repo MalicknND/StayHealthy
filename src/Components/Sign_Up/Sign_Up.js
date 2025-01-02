@@ -1,69 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import "./Sign_Up.css";
+import { useNavigate } from "react-router-dom";
+import { API_URL } from "../../config";
 
 const Sign_Up = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    password: ''
-  });
-
-  const [errors, setErrors] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    password: ''
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
+  // State variables using useState hook
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [showerr, setShowerr] = useState(""); // State to show error messages
+  const navigate = useNavigate(); // Navigation hook from react-router
+  // Function to handle form submission
+  const register = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+    // API Call to register user
+    const response = await fetch(`${API_URL}/api/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        password: password,
+        phone: phone,
+      }),
     });
-  };
-
-  const validatePhone = (phone) => {
-    const phoneRegex = /^[0-9]{10}$/;
-    return phoneRegex.test(phone);
-  };
-
-  const validateEmail = (email) => {
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    return emailRegex.test(email);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let valid = true;
-    let newErrors = {};
-
-    if (!formData.name) {
-      newErrors.name = 'Name is required.';
-      valid = false;
-    }
-
-    if (!formData.email || !validateEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email address.';
-      valid = false;
-    }
-
-    if (!formData.phone || !validatePhone(formData.phone)) {
-      newErrors.phone = 'Phone number must be exactly 10 digits.';
-      valid = false;
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required.';
-      valid = false;
-    }
-
-    setErrors(newErrors);
-
-    if (valid) {
-      // Handle sign up logic here (e.g., send formData to API)
-      console.log('Sign Up Successful:', formData);
+    const json = await response.json(); // Parse the response JSON
+    if (json.authtoken) {
+      // Store user data in session storage
+      sessionStorage.setItem("auth-token", json.authtoken);
+      sessionStorage.setItem("name", name);
+      sessionStorage.setItem("phone", phone);
+      sessionStorage.setItem("email", email);
+      // Redirect user to home page
+      navigate("/");
+      window.location.reload(); // Refresh the page
+    } else {
+      if (json.errors) {
+        for (const error of json.errors) {
+          setShowerr(error.msg); // Show error messages
+        }
+      } else {
+        setShowerr(json.error);
+      }
     }
   };
 
@@ -83,7 +64,7 @@ const Sign_Up = () => {
         </div>
         <br />
         <div className="signup-form">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={register}>
             <div className="form-group">
               <label htmlFor="name">Name</label>
               <input
@@ -92,36 +73,33 @@ const Sign_Up = () => {
                 id="name"
                 className="form-control"
                 placeholder="Enter your name"
-                value={formData.name}
-                onChange={handleChange}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
-              {errors.name && <span className="error">{errors.name}</span>}
+                 {showerr && (
+                <div className="err" style={{ color: "red" }}>
+                  {showerr}
+                </div>
+              )}
             </div>
-            <div className="form-group">
-              <label htmlFor="phone">Phone</label>
-              <input
-                type="tel"
-                name="phone"
-                id="phone"
-                className="form-control"
-                placeholder="Enter your phone number"
-                value={formData.phone}
-                onChange={handleChange}
-              />
-              {errors.phone && <span className="error">{errors.phone}</span>}
-            </div>
+      
             <div className="form-group">
               <label htmlFor="email">Email</label>
               <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 name="email"
                 id="email"
                 className="form-control"
                 placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
+                aria-describedby="helpId"
               />
-              {errors.email && <span className="error">{errors.email}</span>}
+              {showerr && (
+                <div className="err" style={{ color: "red" }}>
+                  {showerr}
+                </div>
+              )}
             </div>
             <div className="form-group">
               <label htmlFor="password">Password</label>
@@ -131,16 +109,43 @@ const Sign_Up = () => {
                 id="password"
                 className="form-control"
                 placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
-              {errors.password && <span className="error">{errors.password}</span>}
+                {showerr && (
+                <div className="err" style={{ color: "red" }}>
+                  {showerr}
+                </div>
+              )}
+            </div>
+            <div className="form-group">
+              <label htmlFor="phone">Phone</label>
+              <input
+                type="tel"
+                name="phone"
+                id="phone"
+                className="form-control"
+                placeholder="Enter your phone number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              {showerr && (
+                <div className="err" style={{ color: "red" }}>
+                  {showerr}
+                </div>
+              )}
             </div>
             <div className="btn-group">
-              <button type="submit" className="btn btn-primary mb-2 mr-1 waves-effect waves-light">
+              <button
+                type="submit"
+                className="btn btn-primary mb-2 mr-1 waves-effect waves-light"
+              >
                 Submit
               </button>
-              <button type="reset" className="btn btn-danger mb-2 waves-effect waves-light">
+              <button
+                type="reset"
+                className="btn btn-danger mb-2 waves-effect waves-light"
+              >
                 Reset
               </button>
             </div>
