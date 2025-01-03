@@ -12,6 +12,7 @@ import Login from './Components/Login/Login';
 import InstantConsultation from './Components/InstantConsultation/InstantConsultation';
 import FindDoctorSearch from './Components/FindDoctorSearch/FindDoctorSearch';
 import BookingConsultation from './Components/BookingConsultation';
+import Notification from './Components/Notification/Notification';
 
 // Function component for the main App
 function App() {
@@ -25,6 +26,8 @@ function App() {
           <Navbar/>
 
           {/* Set up the Routes for different pages */}
+          <Notification>
+
           <Routes>
             {/* Define individual Route components for different pages */}
             <Route path="/" element={<LandingPage/>}/>
@@ -34,6 +37,7 @@ function App() {
             <Route path="/finddoctor" element={<FindDoctorSearch />} />
             <Route path="/consultation" element={<BookingConsultation />} />
           </Routes>
+          </Notification>
         </BrowserRouter>
     </div>
   );
