@@ -26,7 +26,7 @@ const Landing_Page = () => {
             <h4>
               Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eaque at quae ducimus. Suscipit omnis quibusdam non cum rem voluptatem!
             </h4>
-            <Link to="/instant-consultation"> {/* Creating a hyperlink to jump to the 'services' section */}
+            <Link to="/consultation"> {/* Creating a hyperlink to jump to the 'services' section */}
               <button className="button">Get Started</button> {/* Creating a button with className name 'button' */}
             </Link>
         </div>
